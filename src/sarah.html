@@ -2,41 +2,49 @@
 <link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 
 <dom-module id="character-sarah">
-  <template>
+    <template>
 
-    <style>
-      /* local styles go here */
-      :host {
-        display: inline-block;
-        height: 64px;
-        width: 64px;
-        background-image: url(../src/img/sarah_bow.png);
-        background-position-y: -576px;
-      }
+        <style>
+            /* local styles go here */
+            
+            :host {
+                display: inline-block;
+                height: 64px;
+                width: 64px;
+                background-image: url(../src/img/sarah_bow.png);
+                background-position-y: -576px;
+            }
+            
+            :host([move-left]) {
+                animation-name: move-left;
+                /* Animation name */
+                animation-duration: 0.8s;
+                /* Animation time */
+                animation-iteration-count: infinite;
+                /* Animation execution times */
+                animation-timing-function: steps(9);
+                /* Step number to run the animation */
+            }
+            
+            input {
+                opacity: 0;
+            }
+            
+            @keyframes move-left {
+                from {
+                    background-position-x: 0
+                }
+                to {
+                    background-position-x: -576px
+                }
+            }
+        </style>
+        <!-- local DOM goes here -->
+        <iron-a11y-keys target="[[target]]" id="a11y" keys="left" on-keys-pressed="goToLeft"></iron-a11y-keys>
+        <input id="input" is="iron-input" />
+    </template>
 
-      :host([move-left]) {
-        animation-name: move-left; /* Animation name */
-        animation-duration: 0.8s; /* Animation time */
-        animation-iteration-count: infinite; /* Animation execution times */
-        animation-timing-function: steps(9); /* Step number to run the animation */
-      }
-
-      input {
-          opacity: 0;
-      }
-
-        @keyframes move-left {
-        from {background-position-x: 0}
-        to {background-position-x: -576px}
-        }
-    </style>
-    <!-- local DOM goes here -->
-    <iron-a11y-keys target="[[target]]" id="a11y" keys="left"
-                    on-keys-pressed="goToLeft"></iron-a11y-keys>
-        <input id="input" is="iron-input"/>
-  </template>
-
-  <script>
+    <script>
   Polymer({
     /* this is the element's prototype */
     is: 'character-sarah',
@@ -68,4 +76,3 @@
   </script>
 
 </dom-module>
-
