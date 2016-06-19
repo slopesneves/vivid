@@ -1,0 +1,54 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="character-sarah">
+  <template>
+
+    <style>
+      /* local styles go here */
+      :host {
+        display: inline-block;
+        height: 64px;
+        width: 64px;
+        background-image: url(../src/img/sarah_bow.png);
+        background-position-y: 640px;
+      }
+
+      :host([pressed]) {
+        animation-name: move-left; /* Animation name */
+        animation-duration: 0.8s; /* Animation time */
+        animation-iteration-count: infinite; /* Animation execution times */
+        animation-timing-function: steps(9); /* Step number to run the animation */
+      }
+
+        @keyframes move-left {
+        from {background-position-x: 0}
+        to {background-position-x: -576px}
+        } 
+    </style>
+    <!-- local DOM goes here -->
+  </template>
+
+  <script>
+  Polymer({
+    /* this is the element's prototype */
+    is: 'character-sarah',
+    properties: {
+      toggleIcon: String,
+      pressed: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        reflectToAttribute: true
+      }
+    },
+    listeners: {
+      'tap': 'toggle'
+    },
+    toggle: function() {
+      this.pressed = !this.pressed;
+    },
+  });
+  </script>
+
+</dom-module>
+
