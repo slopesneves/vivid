@@ -12,30 +12,25 @@
                 height: 64px;
                 width: 64px;
                 background-image: url(../src/img/sarah_bow.png);
+            }
+            
+            :host([direction=left]) {
                 background-position-y: -576px;
             }
             
-            :host([move-left]) {
-                animation-name: move;
-                /* Animation name */
-                animation-duration: 0.8s;
-                /* Animation time */
-                animation-iteration-count: infinite;
-                /* Animation execution times */
-                animation-timing-function: steps(9);
-                /* Step number to run the animation */
+            :host([direction=right]) {
+                background-position-y: -704px;
             }
             
-            :host([move-right]) {
-                background-position-y: -704px;
-                animation-name: move;
+            :host([move]) {
                 /* Animation name */
-                animation-duration: 0.8s;
+                animation-name: move;
                 /* Animation time */
-                animation-iteration-count: infinite;
+                animation-duration: 0.8s;
                 /* Animation execution times */
-                animation-timing-function: steps(9);
+                animation-iteration-count: infinite;
                 /* Step number to run the animation */
+                animation-timing-function: steps(9);
             }
             
             input {
@@ -52,9 +47,8 @@
             }
         </style>
         <!-- local DOM goes here -->
-        <iron-a11y-keys target="[[target]]" id="a11y" keys="left" on-keys-pressed="goToLeft"></iron-a11y-keys>
-        <iron-a11y-keys target="[[target]]" id="a11y" keys="right" on-keys-pressed="goToRight"></iron-a11y-keys>
-        <input id="input" is="iron-input" />
+        <iron-a11y-keys target="[[target]]" id="a11y" keys="left right" on-keys-pressed="walk"></iron-a11y-keys>
+        <input id="input" is="iron-input" value="{{userInput::input}}" />
     </template>
 
     <script>
@@ -62,13 +56,13 @@
     /* this is the element's prototype */
     is: 'character-sarah',
     properties: {
-      moveLeft: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        reflectToAttribute: true
+      direction : {
+          type: String,
+          value: "left",
+          notify: true,
+          reflectToAttribute: true
       },
-      moveRight: {
+      move: {
         type: Boolean,
         value: false,
         notify: true,
@@ -87,13 +81,12 @@
     characterFocus : function () {
         this.$.input.focus();
     },
-    goToLeft: function() {
-      this.moveRight = false;
-      this.moveLeft = !this.moveLeft;
-    },
-    goToRight: function() {
-      this.moveLeft = false;
-      this.moveRight = !this.moveRight;
+    walk: function(event) {
+      var direction = event.detail.keyboardEvent.keyIdentifier.toLowerCase();
+      if (this.direction == direction) {
+          this.move = !this.move;
+      }
+      this.direction = direction;
     }
   });
   </script>
