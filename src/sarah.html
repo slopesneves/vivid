@@ -13,9 +13,17 @@
                 width: 64px;
                 background-image: url(../src/img/sarah_bow.png);
             }
-            
+
+            :host([direction=up]) {
+                background-position-y: -512px;
+            }
+
             :host([direction=left]) {
                 background-position-y: -576px;
+            }
+
+            :host([direction=down]) {
+                background-position-y: -640px;
             }
             
             :host([direction=right]) {
@@ -47,7 +55,7 @@
             }
         </style>
         <!-- local DOM goes here -->
-        <iron-a11y-keys target="[[target]]" id="a11y" keys="left right" on-keys-pressed="walk"></iron-a11y-keys>
+        <iron-a11y-keys target="[[target]]" id="a11y" keys="up left down right" on-keys-pressed="walk"></iron-a11y-keys>
         <input id="input" is="iron-input" value="{{userInput::input}}" />
     </template>
 
@@ -58,7 +66,7 @@
     properties: {
       direction : {
           type: String,
-          value: "left",
+          value: "down",
           notify: true,
           reflectToAttribute: true
       },
