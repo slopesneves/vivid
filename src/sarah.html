@@ -7,7 +7,7 @@
             /* local styles go here */
             
             :host {
-                display: block;
+                display: inline-block;
                 height: 64px;
                 width: 64px;
                 background-image: url(../src/img/sarah_bow.png);
@@ -40,14 +40,6 @@
                 animation-timing-function: steps(9);
             }
             
-            input {
-                margin: 0;
-                padding: 0;
-                height: 0;
-                width: 0;
-                border: none;
-            }
-            
             @keyframes move {
                 from {
                     background-position-x: 0
@@ -57,8 +49,6 @@
                 }
             }
         </style>
-        <!-- local DOM goes here -->
-        <input id="control" on-keydown="walk" on-keyup="stop" />
     </template>
 
     <script>
@@ -77,38 +67,7 @@
         value: false,
         notify: true,
         reflectToAttribute: true
-      },
-      target: {
-        type: Object,
-        value: function() {
-        return this.$.control;
-        }
-    }
-    },
-    listeners: {
-        'tap' : 'characterFocus'
-    },
-    characterFocus : function () {
-        var characterControl = this.$.control;
-        characterControl.focus();
-    },
-    walk: function(event) {
-      event.preventDefault();
-      /*
-      To avoid memory leak, the character move on the first
-      keyboard event
-      */
-      if (!this.move) {
-          var keycodes = {37 : "left", 40 : "down", 39 : "right", 38 : "up"};
-          var direction = keycodes[event.keyCode];
-          if (direction != undefined) {
-              this.direction = direction;
-              this.move = true;
-          }
       }
-    },
-    stop: function() {
-        this.move = false;
     }
   });
   </script>

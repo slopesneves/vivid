@@ -6,21 +6,70 @@
         <style>
             :host {
                 display: block;
+                margin-left: auto;
+                margin-right: auto;
                 height: 64px;
                 width: 640px;
                 background-color: blanchedalmond;
+                text-align: center;
             }
 
-            :host character-sarah {
-                margin-left: auto;
-                margin-right: auto;
+            :host input {
+                margin: 0;
+                padding: 0;
+                height: 0;
+                width: 0;
+                border: none;
             }
         </style>
-        <character-sarah></character-sarah>
+        <input id="character-control" on-keydown="walk" on-keyup="stop" />
+        <character-sarah move="[[characterMove]]" direction="[[characterDirection]]"></character-sarah>
     </template>
     <script>
         Polymer({
-            is: 'vivid-map'
+            is: 'vivid-map',
+
+            properties: {
+                characterDirection : {
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: false
+                },
+                characterMove: {
+                    type: Boolean,
+                    value: false,
+                    notify: true,
+                    reflectToAttribute: false
+                }
+            },
+
+            listeners: {
+                'tap' : 'characterFocus'
+            },
+            characterFocus : function () {
+                var characterControl = this.$['character-control'];
+                characterControl.focus();
+            },
+
+            walk: function(event) {
+                event.preventDefault();
+                /*
+                To avoid memory leak, the character move on the first
+                keyboard event
+                */
+                if (!this.characterMove) {
+                    var keycodes = {37 : "left", 40 : "down", 39 : "right", 38 : "up"};
+                    var characterDirection = keycodes[event.keyCode];
+                    if (characterDirection != undefined) {
+                        this.characterDirection = characterDirection;
+                        this.characterMove = true;
+                    }
+                }
+            },
+
+            stop: function() {
+                this.characterMove = false;
+            }
         });
     </script>
 </dom-module>
