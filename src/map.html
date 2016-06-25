@@ -1,0 +1,26 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="./sarah.html">
+
+<dom-module id="vivid-map">
+    <template>
+        <style>
+            :host {
+                display: block;
+                height: 64px;
+                width: 640px;
+                background-color: blanchedalmond;
+            }
+
+            :host character-sarah {
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
+        <character-sarah></character-sarah>
+    </template>
+    <script>
+        Polymer({
+            is: 'vivid-map'
+        });
+    </script>
+</dom-module>
