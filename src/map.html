@@ -58,6 +58,11 @@
                 backgroundY: {
                     type: Number,
                     value: 0
+                },
+                _characterMovementSpeed: {
+                    type: Number,
+                    value: 100,
+                    readOnly: true
                 }
             },
 
@@ -94,11 +99,29 @@
 
             _characterMoving: function () {
                 var context = this;
-                if (this.characterMove && this.direction == "left") {
-                    this.timer = new Date().getTime();
+                if (context.characterMove) {
+                    var moveTimerStart = new Date().getTime();
+                    
                     requestAnimationFrame(function () {
-                        context.backgroundX += Math.ceil((new Date().getTime() - context.timer) / 1000 * 150);
-                        context.customStyle['--backgroundX'] = context.backgroundX.toString();
+                        var moveTimerEnd = new Date().getTime();
+                        var backgroundMovement = (moveTimerEnd - moveTimerStart) / 1000 * context._characterMovementSpeed;
+                        
+                        switch(context.direction) {
+                            case "right":
+                                backgroundMovement *= -1;
+                            case "left":
+                                context.backgroundX += backgroundMovement;
+                                context.customStyle['--backgroundX'] = context.backgroundX.toString();
+                                break;
+                            case "down":
+                                backgroundMovement *= -1;
+                            case "up":
+                                context.backgroundY += backgroundMovement;
+                                context.customStyle['--backgroundY'] = context.backgroundY.toString();
+                                break;
+                            default:
+                                console.log("Unable to handle" + context.direction + " direction");
+                        }
                         context.updateStyles();
                         context._characterMoving();
                     });
