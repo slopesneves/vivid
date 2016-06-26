@@ -6,12 +6,16 @@
         <style>
             :host {
                 display: block;
+                will-change: background-position-x;
+                will-change: background-position-y;
                 margin-left: auto;
                 margin-right: auto;
-                height: 64px;
+                height: 640px;
                 width: 640px;
-                background-color: blanchedalmond;
+                background-image: url(../src/img/map.jpg);
                 text-align: center;
+                background-position-x: var(--backgroundX, 0)px;
+                background-position-y: var(--backgroundY, 0)px;
             }
 
             :host input {
@@ -23,7 +27,7 @@
             }
         </style>
         <input id="character-control" on-keydown="walk" on-keyup="stop" />
-        <character-sarah move="[[characterMove]]" direction="[[characterDirection]]"></character-sarah>
+        <character-sarah id="character" move="[[characterMove]]" direction="[[characterDirection]]"></character-sarah>
     </template>
     <script>
         Polymer({
@@ -39,7 +43,21 @@
                     type: Boolean,
                     value: false,
                     notify: true,
-                    reflectToAttribute: false
+                    reflectToAttribute: false,
+                    observer: '_characterMoving'
+                },
+                direction: {
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                backgroundX: {
+                    type: Number,
+                    value: 0
+                },
+                backgroundY: {
+                    type: Number,
+                    value: 0
                 }
             },
 
@@ -62,13 +80,29 @@
                     var characterDirection = keycodes[event.keyCode];
                     if (characterDirection != undefined) {
                         this.characterDirection = characterDirection;
+                        this.direction = characterDirection;
                         this.characterMove = true;
+                        this.timer = new Date().getTime();
                     }
                 }
             },
 
             stop: function() {
                 this.characterMove = false;
+                this.direction = "";
+            },
+
+            _characterMoving: function () {
+                var context = this;
+                if (this.characterMove && this.direction == "left") {
+                    this.timer = new Date().getTime();
+                    requestAnimationFrame(function () {
+                        context.backgroundX += Math.ceil((new Date().getTime() - context.timer) / 1000 * 150);
+                        context.customStyle['--backgroundX'] = context.backgroundX.toString();
+                        context.updateStyles();
+                        context._characterMoving();
+                    });
+                }
             }
         });
     </script>
