@@ -61,7 +61,7 @@
                 },
                 _characterMovementSpeed: {
                     type: Number,
-                    value: 100,
+                    value: 150,
                     readOnly: true
                 }
             },
@@ -119,8 +119,10 @@
                                 context.backgroundY += backgroundMovement;
                                 context.customStyle['--backgroundY'] = context.backgroundY.toString();
                                 break;
+                            case "":
+                                return;
                             default:
-                                console.log("Unable to handle" + context.direction + " direction");
+                                console.log("Unable to handle " + context.direction + " direction");
                         }
                         context.updateStyles();
                         context._characterMoving();
