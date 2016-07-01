@@ -14,13 +14,15 @@
                 width: 640px;
                 background-image: url(../src/img/map.jpg);
                 background-repeat: no-repeat;
-                background-position-x: var(--backgroundX, 0)px;
-                background-position-y: var(--backgroundY, 0)px;
+                background-position-x: var(--background-x, 0)px;
+                background-position-y: var(--background-y, 0)px;
+                transition: background-position linear;
+                transition-duration: 0.125s;
             }
 
             :host character-sarah{
                 position: absolute;
-                top: 256px;
+                top: 50%;
                 left: 50%;
             }
 
@@ -32,7 +34,7 @@
                 border: none;
             }
         </style>
-        <input id="character-control" on-keydown="walk" on-keyup="stop" />
+        <input id="character-control" on-keydown="move" on-keyup="stop" />
         <character-sarah id="character" move="[[characterMove]]" direction="[[characterDirection]]"></character-sarah>
     </template>
     <script>
@@ -50,12 +52,11 @@
                     value: false,
                     notify: true,
                     reflectToAttribute: false,
-                    observer: '_characterMoving'
                 },
                 direction: {
                     type: String,
-                    notify: true,
-                    reflectToAttribute: true
+                    notify: false,
+                    reflectToAttribute: false
                 },
                 backgroundX: {
                     type: Number,
@@ -65,74 +66,86 @@
                     type: Number,
                     value: 0
                 },
-                _characterMovementSpeed: {
+                _moving: {
+                    type: Boolean,
+                    value: false
+                },
+                _backgroundMovement: {
                     type: Number,
-                    value: 150,
-                    readOnly: true
-                }
+                    value: 16
+                },
+            },
+
+            ready: function () {
+                Polymer.dom(this).node.addEventListener("transitionend", this._movingListener, false);
             },
 
             listeners: {
                 'tap' : 'characterFocus'
             },
             characterFocus : function () {
-                var characterControl = this.$['character-control'];
-                characterControl.focus();
+                this.$['character-control'].focus();
             },
 
-            walk: function(event) {
+            move: function(event) {
                 event.preventDefault();
                 /*
                 To avoid memory leak, the character move on the first
                 keyboard event
                 */
                 if (!this.characterMove) {
-                    var keycodes = {37 : "left", 40 : "down", 39 : "right", 38 : "up"};
-                    var characterDirection = keycodes[event.keyCode];
+                    var characterDirection = this._keyCodes[event.keyCode];
                     if (characterDirection != undefined) {
                         this.characterDirection = characterDirection;
                         this.direction = characterDirection;
                         this.characterMove = true;
-                        this.timer = new Date().getTime();
+                        this._moving = true;
+                        this._movingBackground();
                     }
                 }
             },
 
-            stop: function() {
+            stop: function () {
+                this._moving = false;
+            },
+
+            _keyCodes: {
+                37 : "left", 40 : "down", 39 : "right", 38 : "up"
+            },
+
+            _movingBackground: function () {
+                var backgroundMovement = this._backgroundMovement;
+                switch(this.direction) {
+                    case "right":
+                        backgroundMovement *= -1;
+                    case "left":
+                        this.backgroundX += backgroundMovement;
+                        this.customStyle['--background-x'] = this.backgroundX.toString();
+                        break;
+                    case "down":
+                        backgroundMovement *= -1;
+                    case "up":
+                        this.backgroundY += backgroundMovement;
+                        this.customStyle['--background-y'] = this.backgroundY.toString();
+                        break;
+                    case "":
+                        return;
+                    default:
+                        console.log("Unable to handle " + this.direction + " direction");
+                }
+                this.updateStyles();
+            },
+
+            _characterStop: function () {
                 this.characterMove = false;
                 this.direction = "";
             },
 
-            _characterMoving: function () {
-                var context = this;
-                if (context.characterMove) {
-                    var moveTimerStart = new Date().getTime();
-                    
-                    requestAnimationFrame(function () {
-                        var moveTimerEnd = new Date().getTime();
-                        var backgroundMovement = (moveTimerEnd - moveTimerStart) / 1000 * context._characterMovementSpeed;
-                        
-                        switch(context.direction) {
-                            case "right":
-                                backgroundMovement *= -1;
-                            case "left":
-                                context.backgroundX += backgroundMovement;
-                                context.customStyle['--backgroundX'] = context.backgroundX.toString();
-                                break;
-                            case "down":
-                                backgroundMovement *= -1;
-                            case "up":
-                                context.backgroundY += backgroundMovement;
-                                context.customStyle['--backgroundY'] = context.backgroundY.toString();
-                                break;
-                            case "":
-                                return;
-                            default:
-                                console.log("Unable to handle " + context.direction + " direction");
-                        }
-                        context.updateStyles();
-                        context._characterMoving();
-                    });
+            _movingListener: function () {
+                if (this._moving) {
+                    this._movingBackground();
+                } else {
+                    this._characterStop();
                 }
             }
         });
