@@ -3,7 +3,7 @@
 ## Launch the application
 *Prerequisite : You need to have Polymer installed*
 
-**Warn** : The application was only tested on Chrome web browser
+* **Warn** : The application was only tested on Chrome and Microsoft Edge web browser
 
 1. Go on terminal
 2. Move to the project directory
@@ -11,5 +11,5 @@
 4. Go on http://localhost:8080/src/ 
 
 ## Make character moving
-1. Click on the character
+1. Click on the map
 2. Use arrow to move in different direction
