@@ -8,8 +8,6 @@
                 display: block;
                 will-change: background-position-x;
                 will-change: background-position-y;
-                margin-left: auto;
-                margin-right: auto;
                 height: 640px;
                 width: 640px;
                 background-image: url(../src/img/map.jpg);
@@ -22,8 +20,8 @@
 
             :host character-sarah{
                 position: absolute;
-                top: 50%;
-                left: 50%;
+                top: 320px;
+                left: 320px;
             }
 
             :host input {
@@ -33,8 +31,16 @@
                 width: 0;
                 border: none;
             }
+
+            :host img {
+                display: block;
+                position: absolute;
+                top: 64px;
+                left: 320px;
+            }
         </style>
         <input id="character-control" on-keydown="move" on-keyup="stop" />
+        <img alt="tree" src="../src/img/tree.png"/>
         <character-sarah id="character" move="[[characterMove]]" direction="[[characterDirection]]"></character-sarah>
     </template>
     <script>
