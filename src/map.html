@@ -37,7 +37,8 @@
                 position: absolute;
                 top: var(--item-top, 64)px;
                 left: var(--item-left, 320)px;
-                transition: all linear;
+                transition: linear;
+                transition-property: top, left;
                 transition-duration: 0.125s;
             }
         </style>
@@ -161,12 +162,17 @@
                 this.direction = "";
             },
 
-            _movingListener: function () {
-                if (this._moving) {
-                    this._movingBackground();
-                } else {
-                    this._characterStop();
+            _movingListener: function (event) {
+                if(this._isFiredByMovement(event)) {
+                    if (this._moving) {
+                        this._movingBackground();
+                    } else {
+                        this._characterStop();
+                    }
                 }
+            },
+            _isFiredByMovement: function (event) {
+                return event.propertyName.includes("background-position");
             }
         });
     </script>
