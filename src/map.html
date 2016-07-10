@@ -15,13 +15,13 @@
                 background-position-x: var(--background-x, 0)px;
                 background-position-y: var(--background-y, 0)px;
                 transition: background-position linear;
-                transition-duration: 0.125s;
+                transition-duration: var(--transition-elapsed-time, 0.125)s;
             }
 
             :host character-sarah{
                 position: absolute;
-                top: 320px;
-                left: 320px;
+                top: var(--character-origin-top, 0)px;
+                left: var(--character-origin-left, 0)px;
             }
 
             :host input {
@@ -39,7 +39,7 @@
                 left: var(--item-left, 320)px;
                 transition: linear;
                 transition-property: top, left;
-                transition-duration: 0.125s;
+                transition-duration: var(--transition-elapsed-time)s;
             }
         </style>
         <input id="character-control" on-keydown="move" on-keyup="stop" />
@@ -55,6 +55,14 @@
                     type: String,
                     notify: true,
                     reflectToAttribute: false
+                },
+                characterOriginTop : {
+                    type: Number,
+                    value: 320
+                },
+                characterOriginLeft : {
+                    type: Number,
+                    value: 320
                 },
                 characterMove: {
                     type: Boolean,
@@ -83,6 +91,10 @@
                     type: Number,
                     value: 320
                 },
+                transitionElapsedTime: {
+                    type: Number,
+                    value: 0.125
+                },
                 _moving: {
                     type: Boolean,
                     value: false
@@ -90,10 +102,19 @@
                 _backgroundMovement: {
                     type: Number,
                     value: 16
-                },
+                }
             },
 
             ready: function () {
+                this.customStyle['--background-x'] = this.backgroundX.toString();
+                this.customStyle['--background-y'] = this.backgroundY.toString();
+                this.customStyle['--character-origin-top'] = this.characterOriginTop.toString();
+                this.customStyle['--character-origin-left'] = this.characterOriginLeft.toString();
+                this.customStyle['--item-left'] = this.itemLeft.toString();
+                this.customStyle['--item-top'] = this.itemTop.toString();
+                this.customStyle['--transition-elapsed-time'] = this.transitionElapsedTime.toString();
+
+                this.updateStyles();
                 Polymer.dom(this).node.addEventListener("transitionend", this._movingListener, false);
             },
 
@@ -136,7 +157,7 @@
                     case "right":
                         backgroundMovement *= -1;
                     case "left":
-                        if (this.itemLeft + backgroundMovement == 320 && this.itemTop == 320) {
+                        if (this.itemLeft + backgroundMovement == this.characterOriginLeft && this.itemTop == this.characterOriginTop) {
                             return this._characterStop();
                         }
                         this.backgroundX += backgroundMovement;
@@ -147,7 +168,7 @@
                     case "down":
                         backgroundMovement *= -1;
                     case "up":
-                        if (this.itemLeft == 320 && this.itemTop + backgroundMovement == 320) {
+                        if (this.itemLeft == this.characterOriginLeft && this.itemTop + backgroundMovement == this.characterOriginTop) {
                             return this._characterStop();
                         }
                         this.backgroundY += backgroundMovement;
