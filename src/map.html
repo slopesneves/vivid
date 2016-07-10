@@ -136,6 +136,9 @@
                     case "right":
                         backgroundMovement *= -1;
                     case "left":
+                        if (this.itemLeft + backgroundMovement == 320 && this.itemTop == 320) {
+                            return this._characterStop();
+                        }
                         this.backgroundX += backgroundMovement;
                         this.itemLeft += backgroundMovement;
                         this.customStyle['--background-x'] = this.backgroundX.toString();
@@ -144,6 +147,9 @@
                     case "down":
                         backgroundMovement *= -1;
                     case "up":
+                        if (this.itemLeft == 320 && this.itemTop + backgroundMovement == 320) {
+                            return this._characterStop();
+                        }
                         this.backgroundY += backgroundMovement;
                         this.itemTop += backgroundMovement;
                         this.customStyle['--background-y'] = this.backgroundY.toString();
