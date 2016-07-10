@@ -35,8 +35,10 @@
             :host img {
                 display: block;
                 position: absolute;
-                top: 64px;
-                left: 320px;
+                top: var(--item-top, 64)px;
+                left: var(--item-left, 320)px;
+                transition: all linear;
+                transition-duration: 0.125s;
             }
         </style>
         <input id="character-control" on-keydown="move" on-keyup="stop" />
@@ -71,6 +73,14 @@
                 backgroundY: {
                     type: Number,
                     value: 0
+                },
+                itemTop: {
+                    type: Number,
+                    value: 64
+                },
+                itemLeft: {
+                    type: Number,
+                    value: 320
                 },
                 _moving: {
                     type: Boolean,
@@ -126,13 +136,17 @@
                         backgroundMovement *= -1;
                     case "left":
                         this.backgroundX += backgroundMovement;
+                        this.itemLeft += backgroundMovement;
                         this.customStyle['--background-x'] = this.backgroundX.toString();
+                        this.customStyle['--item-left'] = this.itemLeft.toString();
                         break;
                     case "down":
                         backgroundMovement *= -1;
                     case "up":
                         this.backgroundY += backgroundMovement;
+                        this.itemTop += backgroundMovement;
                         this.customStyle['--background-y'] = this.backgroundY.toString();
+                        this.customStyle['--item-top'] = this.itemTop.toString();
                         break;
                     case "":
                         return;
