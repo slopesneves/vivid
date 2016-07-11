@@ -44,7 +44,9 @@
             }
         </style>
         <input id="character-control" on-keydown="move" on-keyup="stop" />
-        <vivid-tree></vivid-tree>
+        <template is="dom-repeat" items="[[trees]]" as="tree">
+            <vivid-tree position-top="{{tree.positionTop}}" position-left="{{tree.positionLeft}}"></vivid-tree>
+        </template>
         <character-sarah id="character" move="[[characterMove]]" direction="[[characterDirection]]"></character-sarah>
     </template>
     <script>
@@ -107,6 +109,17 @@
             },
 
             ready: function () {
+                this.trees = [{
+                        positionTop: 64,
+                        positionLeft: 320    
+                    },{
+                        positionTop: 32,
+                        positionLeft: 320    
+                    },{
+                        positionTop: 32,
+                        positionLeft: 164    
+                    }
+                ];
                 this.customStyle['--background-x'] = this.backgroundX.toString();
                 this.customStyle['--background-y'] = this.backgroundY.toString();
                 this.customStyle['--character-origin-top'] = this.characterOriginTop.toString();
@@ -154,6 +167,7 @@
 
             _movingBackground: function () {
                 var backgroundMovement = this._backgroundMovement;
+                var context = this;
                 switch(this.direction) {
                     case "right":
                         backgroundMovement *= -1;
@@ -162,9 +176,11 @@
                             return this._characterStop();
                         }
                         this.backgroundX += backgroundMovement;
-                        this.itemLeft += backgroundMovement;
                         this.customStyle['--background-x'] = this.backgroundX.toString();
-                        this.customStyle['--item-left'] = this.itemLeft.toString();
+                        this.trees.map(function (tree) {
+                            tree.positionLeft += backgroundMovement;
+                            context.set(`trees.${context.trees.indexOf(tree)}.positionLeft`, tree.positionLeft);
+                        });
                         break;
                     case "down":
                         backgroundMovement *= -1;
@@ -173,9 +189,11 @@
                             return this._characterStop();
                         }
                         this.backgroundY += backgroundMovement;
-                        this.itemTop += backgroundMovement;
                         this.customStyle['--background-y'] = this.backgroundY.toString();
-                        this.customStyle['--item-top'] = this.itemTop.toString();
+                        this.trees.map(function (tree) {
+                            tree.positionTop += backgroundMovement;
+                            context.set(`trees.${context.trees.indexOf(tree)}.positionTop`, tree.positionTop);
+                        });
                         break;
                     case "":
                         return;
