@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="./sarah.html">
+<link rel="import" href="./tree.html">
 
 <dom-module id="vivid-map">
     <template>
@@ -43,7 +44,7 @@
             }
         </style>
         <input id="character-control" on-keydown="move" on-keyup="stop" />
-        <img alt="tree" src="../src/img/tree.png"/>
+        <vivid-tree></vivid-tree>
         <character-sarah id="character" move="[[characterMove]]" direction="[[characterDirection]]"></character-sarah>
     </template>
     <script>
