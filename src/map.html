@@ -86,14 +86,6 @@
                     type: Number,
                     value: 0
                 },
-                itemTop: {
-                    type: Number,
-                    value: 64
-                },
-                itemLeft: {
-                    type: Number,
-                    value: 320
-                },
                 transitionElapsedTime: {
                     type: Number,
                     value: 0.125
@@ -114,18 +106,16 @@
                         positionLeft: 320    
                     },{
                         positionTop: 32,
-                        positionLeft: 320    
+                        positionLeft: 160    
                     },{
                         positionTop: 32,
-                        positionLeft: 164    
+                        positionLeft: 32    
                     }
                 ];
                 this.customStyle['--background-x'] = this.backgroundX.toString();
                 this.customStyle['--background-y'] = this.backgroundY.toString();
                 this.customStyle['--character-origin-top'] = this.characterOriginTop.toString();
                 this.customStyle['--character-origin-left'] = this.characterOriginLeft.toString();
-                this.customStyle['--item-left'] = this.itemLeft.toString();
-                this.customStyle['--item-top'] = this.itemTop.toString();
                 this.customStyle['--transition-elapsed-time'] = this.transitionElapsedTime.toString();
 
                 this.updateStyles();
@@ -172,8 +162,10 @@
                     case "right":
                         backgroundMovement *= -1;
                     case "left":
-                        if (this.itemLeft + backgroundMovement == this.characterOriginLeft && this.itemTop == this.characterOriginTop) {
-                            return this._characterStop();
+                        for(var tree of context.trees) {
+                            if (tree.positionLeft + backgroundMovement == context.characterOriginLeft && tree.positionTop == context.characterOriginTop) {
+                                return context._characterStop();
+                            }
                         }
                         this.backgroundX += backgroundMovement;
                         this.customStyle['--background-x'] = this.backgroundX.toString();
@@ -185,8 +177,10 @@
                     case "down":
                         backgroundMovement *= -1;
                     case "up":
-                        if (this.itemLeft == this.characterOriginLeft && this.itemTop + backgroundMovement == this.characterOriginTop) {
-                            return this._characterStop();
+                        for(var tree of context.trees) {
+                            if (tree.positionTop + backgroundMovement == context.characterOriginTop && tree.positionLeft == context.characterOriginLeft) {
+                                return context._characterStop();
+                            }
                         }
                         this.backgroundY += backgroundMovement;
                         this.customStyle['--background-y'] = this.backgroundY.toString();
