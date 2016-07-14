@@ -162,10 +162,8 @@
                     case "right":
                         backgroundMovement *= -1;
                     case "left":
-                        for(var tree of context.trees) {
-                            if (tree.positionLeft + backgroundMovement == context.characterOriginLeft && tree.positionTop == context.characterOriginTop) {
-                                return context._characterStop();
-                            }
+                        if (this._isCharacterBlocked(backgroundMovement, 0)) {
+                            return context._characterStop();
                         }
                         this.backgroundX += backgroundMovement;
                         this.customStyle['--background-x'] = this.backgroundX.toString();
@@ -177,10 +175,8 @@
                     case "down":
                         backgroundMovement *= -1;
                     case "up":
-                        for(var tree of context.trees) {
-                            if (tree.positionTop + backgroundMovement == context.characterOriginTop && tree.positionLeft == context.characterOriginLeft) {
-                                return context._characterStop();
-                            }
+                        if (this._isCharacterBlocked(0, backgroundMovement)) {
+                            return context._characterStop();
                         }
                         this.backgroundY += backgroundMovement;
                         this.customStyle['--background-y'] = this.backgroundY.toString();
@@ -213,7 +209,17 @@
             },
             _isFiredByMovement: function (event) {
                 return event.propertyName.includes("background-position");
-            }
+            },
+            _isCharacterBlocked: function (x, y) {
+                for(var tree of this.trees) {
+                    var isTreeOnSameX = tree.positionLeft + x == this.characterOriginLeft;
+                    var isTreeOnSameY = tree.positionTop + y == this.characterOriginLeft;
+                    if (isTreeOnSameX && isTreeOnSameY) {
+                        return true;
+                    }
+                }
+                return false;
+            } 
         });
     </script>
 </dom-module>
