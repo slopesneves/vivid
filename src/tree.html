@@ -1,0 +1,64 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="vivid-tree">
+    <template>
+        <style>
+            :host {
+                display: block;
+                background-image: url(../src/img/tree.png);
+                height: 64px;
+                width: 64px;
+                transition: background-position linear;
+                transition-duration: var(--transition-elapsed-time, 0.125)s;
+                position: absolute;
+                top: var(--position-top, 64)px;
+                left: var(--position-left, 320)px;
+                transition: linear;
+                transition-property: top, left;
+                transition-duration: var(--transition-elapsed-time)s;
+            }
+        </style>
+    </template>
+    <script>
+        Polymer({
+            is: 'vivid-tree',
+
+            properties: {
+                positionTop: {
+                    type: Number,
+                    value: 64,
+                    notify: true,
+                    observer: 'updateCssTopPosition'
+                },
+                positionLeft: {
+                    type: Number,
+                    value: 320,
+                    notify: true,
+                    observer: 'updateCssLeftPosition'
+                },
+                transitionElapsedTime: {
+                    type: Number,
+                    value: 0.125
+                }
+            },
+
+            ready: function () {
+                this.updateCssLeftPosition();
+                this.updateCssTopPosition();
+                this.customStyle['--transition-elapsed-time'] = this.transitionElapsedTime.toString();
+            },
+
+            updateCssLeftPosition () {
+                this._updateCssPosition ('--position-left', this.positionLeft);
+            },
+
+            updateCssTopPosition () {
+                this._updateCssPosition ('--position-top', this.positionTop);
+            },
+
+            _updateCssPosition (cssVariable, position) {
+                this.customStyle[cssVariable] = position.toString();
+            }
+        });
+    </script>
+</dom-module>

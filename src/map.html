@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="./sarah.html">
+<link rel="import" href="./tree.html">
 
 <dom-module id="vivid-map">
     <template>
@@ -8,8 +9,6 @@
                 display: block;
                 will-change: background-position-x;
                 will-change: background-position-y;
-                margin-left: auto;
-                margin-right: auto;
                 height: 640px;
                 width: 640px;
                 background-image: url(../src/img/map.jpg);
@@ -17,13 +16,13 @@
                 background-position-x: var(--background-x, 0)px;
                 background-position-y: var(--background-y, 0)px;
                 transition: background-position linear;
-                transition-duration: 0.125s;
+                transition-duration: var(--transition-elapsed-time, 0.125)s;
             }
 
             :host character-sarah{
                 position: absolute;
-                top: 50%;
-                left: 50%;
+                top: var(--character-origin-top, 0)px;
+                left: var(--character-origin-left, 0)px;
             }
 
             :host input {
@@ -33,8 +32,21 @@
                 width: 0;
                 border: none;
             }
+
+            :host img {
+                display: block;
+                position: absolute;
+                top: var(--item-top, 64)px;
+                left: var(--item-left, 320)px;
+                transition: linear;
+                transition-property: top, left;
+                transition-duration: var(--transition-elapsed-time)s;
+            }
         </style>
         <input id="character-control" on-keydown="move" on-keyup="stop" />
+        <template is="dom-repeat" items="[[trees]]" as="tree">
+            <vivid-tree position-top="[[tree.positionTop]]" position-left="[[tree.positionLeft]]"></vivid-tree>
+        </template>
         <character-sarah id="character" move="[[characterMove]]" direction="[[characterDirection]]"></character-sarah>
     </template>
     <script>
@@ -46,6 +58,14 @@
                     type: String,
                     notify: true,
                     reflectToAttribute: false
+                },
+                characterOriginTop : {
+                    type: Number,
+                    value: 320
+                },
+                characterOriginLeft : {
+                    type: Number,
+                    value: 320
                 },
                 characterMove: {
                     type: Boolean,
@@ -66,6 +86,10 @@
                     type: Number,
                     value: 0
                 },
+                transitionElapsedTime: {
+                    type: Number,
+                    value: 0.125
+                },
                 _moving: {
                     type: Boolean,
                     value: false
@@ -73,10 +97,28 @@
                 _backgroundMovement: {
                     type: Number,
                     value: 16
-                },
+                }
             },
 
             ready: function () {
+                this.trees = [{
+                        positionTop: 64,
+                        positionLeft: 320    
+                    },{
+                        positionTop: 32,
+                        positionLeft: 160    
+                    },{
+                        positionTop: 32,
+                        positionLeft: 32    
+                    }
+                ];
+                this.customStyle['--background-x'] = this.backgroundX.toString();
+                this.customStyle['--background-y'] = this.backgroundY.toString();
+                this.customStyle['--character-origin-top'] = this.characterOriginTop.toString();
+                this.customStyle['--character-origin-left'] = this.characterOriginLeft.toString();
+                this.customStyle['--transition-elapsed-time'] = this.transitionElapsedTime.toString();
+
+                this.updateStyles();
                 Polymer.dom(this).node.addEventListener("transitionend", this._movingListener, false);
             },
 
@@ -115,18 +157,33 @@
 
             _movingBackground: function () {
                 var backgroundMovement = this._backgroundMovement;
+                var context = this;
                 switch(this.direction) {
                     case "right":
                         backgroundMovement *= -1;
                     case "left":
+                        if (this._isCharacterBlocked(backgroundMovement, 0)) {
+                            return context._characterStop();
+                        }
                         this.backgroundX += backgroundMovement;
                         this.customStyle['--background-x'] = this.backgroundX.toString();
+                        this.trees.map(function (tree) {
+                            tree.positionLeft += backgroundMovement;
+                            context.set(`trees.${context.trees.indexOf(tree)}.positionLeft`, tree.positionLeft);
+                        });
                         break;
                     case "down":
                         backgroundMovement *= -1;
                     case "up":
+                        if (this._isCharacterBlocked(0, backgroundMovement)) {
+                            return context._characterStop();
+                        }
                         this.backgroundY += backgroundMovement;
                         this.customStyle['--background-y'] = this.backgroundY.toString();
+                        this.trees.map(function (tree) {
+                            tree.positionTop += backgroundMovement;
+                            context.set(`trees.${context.trees.indexOf(tree)}.positionTop`, tree.positionTop);
+                        });
                         break;
                     case "":
                         return;
@@ -141,13 +198,28 @@
                 this.direction = "";
             },
 
-            _movingListener: function () {
-                if (this._moving) {
-                    this._movingBackground();
-                } else {
-                    this._characterStop();
+            _movingListener: function (event) {
+                if(this._isFiredByMovement(event)) {
+                    if (this._moving) {
+                        this._movingBackground();
+                    } else {
+                        this._characterStop();
+                    }
                 }
-            }
+            },
+            _isFiredByMovement: function (event) {
+                return event.propertyName.includes("background-position");
+            },
+            _isCharacterBlocked: function (x, y) {
+                for(var tree of this.trees) {
+                    var isTreeOnSameX = tree.positionLeft + x == this.characterOriginLeft;
+                    var isTreeOnSameY = tree.positionTop + y == this.characterOriginLeft;
+                    if (isTreeOnSameX && isTreeOnSameY) {
+                        return true;
+                    }
+                }
+                return false;
+            } 
         });
     </script>
 </dom-module>
