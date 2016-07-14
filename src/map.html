@@ -45,7 +45,7 @@
         </style>
         <input id="character-control" on-keydown="move" on-keyup="stop" />
         <template is="dom-repeat" items="[[trees]]" as="tree">
-            <vivid-tree position-top="{{tree.positionTop}}" position-left="{{tree.positionLeft}}"></vivid-tree>
+            <vivid-tree position-top="[[tree.positionTop]]" position-left="[[tree.positionLeft]]"></vivid-tree>
         </template>
         <character-sarah id="character" move="[[characterMove]]" direction="[[characterDirection]]"></character-sarah>
     </template>
